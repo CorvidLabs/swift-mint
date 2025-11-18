@@ -1,0 +1,42 @@
+{
+  "originHash" : "32559822854af8ef06c87af4b9c6d43fed7a960f7e9ce2bc23772916c1eabc53",
+  "pins" : [
+    {
+      "identity" : "swift-algorand",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CorvidLabs/swift-algorand",
+      "state" : {
+        "revision" : "aaecc39d0f462a1a2468785cf0d1a8a3e62815e2",
+        "version" : "0.1.0"
+      }
+    },
+    {
+      "identity" : "swift-asn1",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-asn1.git",
+      "state" : {
+        "revision" : "40d25bbb2fc5b557a9aa8512210bded327c0f60d",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "revision" : "95ba0316a9b733e92bb6b071255ff46263bbe7dc",
+        "version" : "3.15.1"
+      }
+    },
+    {
+      "identity" : "swift-pinata",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CorvidLabs/swift-pinata",
+      "state" : {
+        "revision" : "2b1cdbcf8a8be38983f273cb5be32b0960ca324c",
+        "version" : "0.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}
