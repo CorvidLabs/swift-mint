@@ -21,6 +21,13 @@ public protocol IPFSPinningProvider: Sendable {
     /// Unpin content by CID
     /// - Parameter cid: CID to unpin
     func unpin(_ cid: CID) async throws
+
+    /// Fetch JSON content from IPFS by CID
+    /// - Parameters:
+    ///   - cid: The CID of the content to fetch
+    ///   - type: The type to decode the JSON into
+    /// - Returns: Decoded content
+    func fetchJSON<T: Decodable>(_ cid: CID, as type: T.Type) async throws -> T
 }
 
 // MARK: - Pin Result
@@ -56,6 +63,42 @@ public extension CID {
     /// Get the native IPFS URI
     var ipfsURI: String {
         "ipfs://\(value)"
+    }
+}
+
+// MARK: - Default fetchJSON Implementation
+
+public extension IPFSPinningProvider {
+    /// Default implementation that fetches from a public IPFS gateway
+    /// Providers can override this with their own gateway or dedicated API
+    func fetchJSON<T: Decodable>(_ cid: CID, as type: T.Type) async throws -> T {
+        try await fetchJSON(cid, as: type, gateway: "https://ipfs.io")
+    }
+
+    /// Fetch JSON from a specific IPFS gateway
+    func fetchJSON<T: Decodable>(_ cid: CID, as type: T.Type, gateway: String) async throws -> T {
+        let urlString = cid.gatewayURL(gateway: gateway)
+
+        guard let url = URL(string: urlString) else {
+            throw MintError.networkError("Invalid gateway URL: \(urlString)")
+        }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw MintError.networkError("Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            throw MintError.networkError("HTTP \(httpResponse.statusCode) from IPFS gateway")
+        }
+
+        let decoder = JSONDecoder()
+        do {
+            return try decoder.decode(type, from: data)
+        } catch {
+            throw MintError.invalidMetadata("Failed to decode JSON: \(error.localizedDescription)")
+        }
     }
 }
 
