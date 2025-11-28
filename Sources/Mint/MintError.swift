@@ -11,6 +11,9 @@ public enum MintError: Error, LocalizedError, Sendable {
     case notAuthorized(String)
     case assetNotFound(UInt64)
     case pinningFailed(String)
+    case indexerRequired
+    case metadataNotFound(UInt64)
+    case invalidTemplateURL(String)
 
     public var errorDescription: String? {
         switch self {
@@ -28,6 +31,12 @@ public enum MintError: Error, LocalizedError, Sendable {
             return "Asset not found: \(id)"
         case .pinningFailed(let message):
             return "Pinning failed: \(message)"
+        case .indexerRequired:
+            return "Indexer client is required for this operation"
+        case .metadataNotFound(let assetID):
+            return "Metadata not found for asset: \(assetID)"
+        case .invalidTemplateURL(let url):
+            return "Invalid ARC-19 template URL: \(url)"
         }
     }
 }

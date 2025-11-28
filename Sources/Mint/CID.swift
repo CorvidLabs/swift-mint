@@ -120,25 +120,202 @@ public struct CID: Sendable, Equatable {
     /// Create a template URL for ARC-19
     /// The template uses `{ipfscid:VERSION:CODEC:FIELD:HASH}` format
     /// Uses the codec detected from the CID by default
-    public func toARC19URL(field: String = "reserve") -> String {
-        "template-ipfs://{ipfscid:\(version):\(codec):\(field):sha2-256}"
+    public func toARC19URL(field: String = "reserve", suffix: String? = nil) -> String {
+        var url = "template-ipfs://{ipfscid:\(version):\(codec):\(field):sha2-256}"
+        if let suffix = suffix {
+            url += suffix
+        }
+        return url
+    }
+
+    /// Reconstruct a CID from a reserve address and template URL parameters
+    /// - Parameters:
+    ///   - address: The reserve address containing the 32-byte hash
+    ///   - version: CID version (0 or 1)
+    ///   - codec: Multicodec name ("dag-pb" or "raw")
+    /// - Returns: Reconstructed CID
+    public static func fromReserveAddress(
+        _ address: Address,
+        version: Int,
+        codec: String
+    ) throws -> CID {
+        let hashBytes = address.bytes
+
+        guard hashBytes.count == 32 else {
+            throw MintError.invalidCID("Reserve address must contain 32 bytes, got \(hashBytes.count)")
+        }
+
+        // Create multihash: <hash-fn-code><digest-size><digest>
+        // SHA2-256: 0x12 (18) + 0x20 (32) + 32 bytes
+        var multihash = Data([0x12, 0x20])
+        multihash.append(hashBytes)
+
+        if version == 0 {
+            // CIDv0: Base58 encoded multihash
+            let cidString = Base58.encode(Array(multihash))
+            return try CID(cidString)
+        } else {
+            // CIDv1: <version><codec><multihash> in base32
+            var cidBytes = Data()
+            cidBytes.append(0x01) // Version 1
+
+            // Add codec varint
+            switch codec {
+            case "dag-pb":
+                cidBytes.append(0x70) // dag-pb codec
+            case "raw":
+                cidBytes.append(0x55) // raw codec
+            default:
+                throw MintError.invalidCID("Unsupported codec for CIDv1: \(codec)")
+            }
+
+            cidBytes.append(multihash)
+
+            // Encode as base32 with 'b' prefix
+            let base32 = Base32.encode(Array(cidBytes))
+            let cidString = "b" + base32
+            return try CID(cidString)
+        }
     }
 }
 
-// MARK: - Base58 Decoder
+// MARK: - ARC-19 Template URL Parser
+
+/// Parsed ARC-19 template URL
+public struct ARC19TemplateURL: Sendable, Equatable {
+    /// CID version (0 or 1)
+    public let version: Int
+
+    /// Multicodec name (dag-pb, raw)
+    public let codec: String
+
+    /// Field name containing the hash (usually "reserve")
+    public let field: String
+
+    /// Hash type (usually sha2-256)
+    public let hashType: String
+
+    /// Optional suffix path (e.g., "/arc3.json")
+    public let suffix: String?
+
+    /// Parse an ARC-19 template URL
+    /// Format: template-ipfs://{ipfscid:VERSION:CODEC:FIELD:HASH}[/suffix]
+    public static func parse(_ url: String) throws -> ARC19TemplateURL {
+        // Check prefix
+        guard url.hasPrefix("template-ipfs://") else {
+            throw MintError.invalidTemplateURL("Must start with template-ipfs://")
+        }
+
+        let afterPrefix = String(url.dropFirst("template-ipfs://".count))
+
+        // Find the template part {ipfscid:...}
+        guard afterPrefix.hasPrefix("{ipfscid:") else {
+            throw MintError.invalidTemplateURL("Missing {ipfscid:...} template")
+        }
+
+        // Find closing brace
+        guard let closingBrace = afterPrefix.firstIndex(of: "}") else {
+            throw MintError.invalidTemplateURL("Missing closing brace")
+        }
+
+        let templateStart = afterPrefix.index(afterPrefix.startIndex, offsetBy: "{ipfscid:".count)
+        let templateContent = String(afterPrefix[templateStart..<closingBrace])
+
+        // Parse suffix (everything after the closing brace)
+        let afterBrace = afterPrefix.index(after: closingBrace)
+        let suffix: String? = afterBrace < afterPrefix.endIndex
+            ? String(afterPrefix[afterBrace...])
+            : nil
+
+        // Split template into parts: VERSION:CODEC:FIELD:HASH
+        let parts = templateContent.split(separator: ":")
+        guard parts.count == 4 else {
+            throw MintError.invalidTemplateURL("Expected 4 parts (version:codec:field:hash), got \(parts.count)")
+        }
+
+        guard let version = Int(parts[0]) else {
+            throw MintError.invalidTemplateURL("Invalid version: \(parts[0])")
+        }
+
+        guard version == 0 || version == 1 else {
+            throw MintError.invalidTemplateURL("Version must be 0 or 1, got \(version)")
+        }
+
+        let codec = String(parts[1])
+        let field = String(parts[2])
+        let hashType = String(parts[3])
+
+        return ARC19TemplateURL(
+            version: version,
+            codec: codec,
+            field: field,
+            hashType: hashType,
+            suffix: suffix?.isEmpty == true ? nil : suffix
+        )
+    }
+}
+
+// MARK: - Base58 Encoder/Decoder
 
 private enum Base58 {
-    private static let alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    private static let alphabet = Array("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
+    private static let alphabetString = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+
+    static func encode(_ bytes: [UInt8]) -> String {
+        // Count leading zeros
+        var leadingZeros = 0
+        for byte in bytes {
+            if byte == 0 {
+                leadingZeros += 1
+            } else {
+                break
+            }
+        }
+
+        // Allocate enough space for base58 representation
+        let size = bytes.count * 138 / 100 + 1
+        var result = [UInt8](repeating: 0, count: size)
+
+        var length = 0
+        for byte in bytes {
+            var carry = Int(byte)
+            var i = 0
+
+            for j in stride(from: size - 1, through: 0, by: -1) {
+                if carry == 0 && i >= length { break }
+                carry += 256 * Int(result[j])
+                result[j] = UInt8(carry % 58)
+                carry /= 58
+                i += 1
+            }
+
+            length = i
+        }
+
+        // Skip leading zeros in result
+        var startIndex = 0
+        while startIndex < size && result[startIndex] == 0 {
+            startIndex += 1
+        }
+
+        // Build the string
+        var output = String(repeating: "1", count: leadingZeros)
+        for i in startIndex..<size {
+            output.append(alphabet[Int(result[i])])
+        }
+
+        return output
+    }
 
     static func decode(_ string: String) throws -> [UInt8] {
         var result: [UInt8] = [0]
 
         for char in string {
-            guard let index = alphabet.firstIndex(of: char) else {
+            guard let index = alphabetString.firstIndex(of: char) else {
                 throw MintError.invalidCID("Invalid Base58 character: \(char)")
             }
 
-            var carry = alphabet.distance(from: alphabet.startIndex, to: index)
+            var carry = alphabetString.distance(from: alphabetString.startIndex, to: index)
 
             for i in 0..<result.count {
                 carry += 58 * Int(result[result.count - 1 - i])
@@ -162,10 +339,36 @@ private enum Base58 {
     }
 }
 
-// MARK: - Base32 Decoder (RFC 4648)
+// MARK: - Base32 Encoder/Decoder (RFC 4648)
 
 private enum Base32 {
-    private static let alphabet = "abcdefghijklmnopqrstuvwxyz234567"
+    private static let alphabet = Array("abcdefghijklmnopqrstuvwxyz234567")
+    private static let alphabetString = "abcdefghijklmnopqrstuvwxyz234567"
+
+    static func encode(_ bytes: [UInt8]) -> String {
+        var result = ""
+        var bits = 0
+        var value = 0
+
+        for byte in bytes {
+            value = (value << 8) | Int(byte)
+            bits += 8
+
+            while bits >= 5 {
+                bits -= 5
+                let index = (value >> bits) & 0x1F
+                result.append(alphabet[index])
+            }
+        }
+
+        // Handle remaining bits
+        if bits > 0 {
+            let index = (value << (5 - bits)) & 0x1F
+            result.append(alphabet[index])
+        }
+
+        return result
+    }
 
     static func decode(_ string: String) throws -> [UInt8] {
         var bits = 0
@@ -175,11 +378,11 @@ private enum Base32 {
         for char in string {
             if char == "=" { break }
 
-            guard let index = alphabet.firstIndex(of: char) else {
+            guard let index = alphabetString.firstIndex(of: char) else {
                 throw MintError.invalidCID("Invalid Base32 character: \(char)")
             }
 
-            value = (value << 5) | alphabet.distance(from: alphabet.startIndex, to: index)
+            value = (value << 5) | alphabetString.distance(from: alphabetString.startIndex, to: index)
             bits += 5
 
             if bits >= 8 {

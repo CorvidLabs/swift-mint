@@ -108,7 +108,7 @@ public struct ARC3Metadata: Codable, Sendable, Equatable {
 /// ARC-69 compliant metadata for mutable NFT metadata stored in note field
 /// https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0069.md
 public struct ARC69Metadata: Codable, Sendable, Equatable {
-    /// Standard identifier
+    /// Standard identifier (always "arc69")
     public let standard: String
 
     /// Description of the asset
@@ -117,13 +117,16 @@ public struct ARC69Metadata: Codable, Sendable, Equatable {
     /// URI pointing to external content
     public let externalUrl: String?
 
-    /// Media type
+    /// Media URL
     public let mediaUrl: String?
 
-    /// Attributes/traits
+    /// Properties as key-value pairs (alternative to attributes)
     public let properties: [String: AnyCodable]?
 
-    /// MIME type
+    /// Attributes/traits as an array (alternative to properties)
+    public let attributes: [ARC69Attribute]?
+
+    /// MIME type of the media
     public let mimeType: String?
 
     enum CodingKeys: String, CodingKey {
@@ -132,6 +135,7 @@ public struct ARC69Metadata: Codable, Sendable, Equatable {
         case externalUrl = "external_url"
         case mediaUrl = "media_url"
         case properties
+        case attributes
         case mimeType = "mime_type"
     }
 
@@ -140,6 +144,7 @@ public struct ARC69Metadata: Codable, Sendable, Equatable {
         externalUrl: String? = nil,
         mediaUrl: String? = nil,
         properties: [String: AnyCodable]? = nil,
+        attributes: [ARC69Attribute]? = nil,
         mimeType: String? = nil
     ) {
         self.standard = "arc69"
@@ -147,6 +152,7 @@ public struct ARC69Metadata: Codable, Sendable, Equatable {
         self.externalUrl = externalUrl
         self.mediaUrl = mediaUrl
         self.properties = properties
+        self.attributes = attributes
         self.mimeType = mimeType
     }
 
@@ -155,6 +161,54 @@ public struct ARC69Metadata: Codable, Sendable, Equatable {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
         return try encoder.encode(self)
+    }
+}
+
+// MARK: - ARC-69 Attribute
+
+/// An attribute/trait for ARC-69 NFTs
+/// Used in the attributes array as an alternative to properties
+public struct ARC69Attribute: Codable, Sendable, Equatable {
+    /// The type/name of the trait (e.g., "Background", "Eyes", "Rarity")
+    public let traitType: String
+
+    /// The value of the trait
+    public let value: AnyCodable
+
+    /// Optional display type hint (e.g., "number", "boost_percentage", "date")
+    public let displayType: String?
+
+    enum CodingKeys: String, CodingKey {
+        case traitType = "trait_type"
+        case value
+        case displayType = "display_type"
+    }
+
+    public init(traitType: String, value: AnyCodable, displayType: String? = nil) {
+        self.traitType = traitType
+        self.value = value
+        self.displayType = displayType
+    }
+
+    /// Convenience initializer for string values
+    public init(traitType: String, value: String, displayType: String? = nil) {
+        self.traitType = traitType
+        self.value = AnyCodable(value)
+        self.displayType = displayType
+    }
+
+    /// Convenience initializer for integer values
+    public init(traitType: String, value: Int, displayType: String? = nil) {
+        self.traitType = traitType
+        self.value = AnyCodable(value)
+        self.displayType = displayType
+    }
+
+    /// Convenience initializer for double values
+    public init(traitType: String, value: Double, displayType: String? = nil) {
+        self.traitType = traitType
+        self.value = AnyCodable(value)
+        self.displayType = displayType
     }
 }
 
