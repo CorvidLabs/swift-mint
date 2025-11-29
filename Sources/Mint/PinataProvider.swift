@@ -1,5 +1,9 @@
 @preconcurrency import Foundation
 
+#if canImport(FoundationNetworking)
+@preconcurrency import FoundationNetworking
+#endif
+
 // MARK: - Pinata Provider Protocol
 
 /// Protocol for IPFS pinning services (e.g., Pinata)
