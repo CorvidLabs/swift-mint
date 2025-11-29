@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Mint",
+    name: "swift-mint",
     platforms: [
         .iOS(.v15),
         .macOS(.v12),
