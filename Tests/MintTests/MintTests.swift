@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import ARC
 @testable import Mint
 
 @Suite("CID Tests")
@@ -43,7 +44,7 @@ struct CIDTests {
 struct ARC3MetadataTests {
     @Test("Create basic metadata")
     func createBasicMetadata() {
-        let metadata = ARC3Metadata(
+        let metadata = ARC.ARC3Metadata(
             name: "Test NFT",
             description: "A test NFT",
             image: "ipfs://QmTest"
@@ -56,7 +57,7 @@ struct ARC3MetadataTests {
 
     @Test("Encode metadata to JSON")
     func encodeToJSON() throws {
-        let metadata = ARC3Metadata(
+        let metadata = ARC.ARC3Metadata(
             name: "Test NFT",
             description: "A test NFT"
         )
@@ -73,7 +74,7 @@ struct ARC3MetadataTests {
 struct ARC69MetadataTests {
     @Test("Create ARC-69 metadata")
     func createMetadata() {
-        let metadata = ARC69Metadata(
+        let metadata = ARC.ARC69Metadata(
             description: "An ARC-69 NFT",
             mediaUrl: "https://example.com/image.png"
         )
@@ -82,40 +83,59 @@ struct ARC69MetadataTests {
         #expect(metadata.description == "An ARC-69 NFT")
     }
 
-    @Test("Encode to note data")
-    func encodeToNote() throws {
-        let metadata = ARC69Metadata(
+    @Test("Encode to JSON")
+    func encodeToJSON() throws {
+        let metadata = ARC.ARC69Metadata(
             description: "Test",
-            properties: ["trait": AnyCodable("value")]
+            properties: ["trait": .string("value")]
         )
 
-        let noteData = try metadata.toNoteData()
-        let json = String(data: noteData, encoding: .utf8)
+        let jsonData = try metadata.toJSON()
+        let json = String(data: jsonData, encoding: .utf8)
 
         #expect(json?.contains("\"standard\":\"arc69\"") == true)
     }
+
+    @Test("ARC-69 metadata with properties")
+    func metadataWithProperties() throws {
+        let metadata = ARC.ARC69Metadata(
+            description: "Test NFT",
+            properties: [
+                "Background": .string("Blue"),
+                "Power": .integer(100)
+            ]
+        )
+
+        #expect(metadata.standard == "arc69")
+        #expect(metadata.properties?.count == 2)
+
+        let jsonData = try metadata.toJSON()
+        let json = String(data: jsonData, encoding: .utf8)
+
+        #expect(json?.contains("\"properties\"") == true)
+    }
 }
 
-@Suite("AnyCodable Tests")
-struct AnyCodableTests {
+@Suite("PropertyValue Tests")
+struct PropertyValueTests {
     @Test("Encode various types")
     func encodeTypes() throws {
         let encoder = JSONEncoder()
 
-        let stringValue = AnyCodable("test")
-        let intValue = AnyCodable(42)
-        let boolValue = AnyCodable(true)
+        let stringValue = ARC.PropertyValue.string("test")
+        let intValue = ARC.PropertyValue.integer(42)
+        let numberValue = ARC.PropertyValue.number(3.14)
 
         _ = try encoder.encode(stringValue)
         _ = try encoder.encode(intValue)
-        _ = try encoder.encode(boolValue)
+        _ = try encoder.encode(numberValue)
     }
 
     @Test("Equality")
     func equality() {
-        #expect(AnyCodable("test") == AnyCodable("test"))
-        #expect(AnyCodable(42) == AnyCodable(42))
-        #expect(AnyCodable(true) == AnyCodable(true))
+        #expect(ARC.PropertyValue.string("test") == ARC.PropertyValue.string("test"))
+        #expect(ARC.PropertyValue.integer(42) == ARC.PropertyValue.integer(42))
+        #expect(ARC.PropertyValue.number(3.14) == ARC.PropertyValue.number(3.14))
     }
 }
 
@@ -198,55 +218,6 @@ struct CIDReverseTests {
     }
 }
 
-@Suite("ARC-69 Attribute Tests")
-struct ARC69AttributeTests {
-    @Test("Create attribute with string value")
-    func createStringAttribute() {
-        let attr = ARC69Attribute(traitType: "Background", value: "Blue")
-        #expect(attr.traitType == "Background")
-        #expect(attr.displayType == nil)
-    }
-
-    @Test("Create attribute with int value")
-    func createIntAttribute() {
-        let attr = ARC69Attribute(traitType: "Power", value: 100, displayType: "number")
-        #expect(attr.traitType == "Power")
-        #expect(attr.displayType == "number")
-    }
-
-    @Test("Encode attribute to JSON")
-    func encodeAttribute() throws {
-        let attr = ARC69Attribute(traitType: "Rarity", value: "Legendary")
-
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(attr)
-        let json = String(data: data, encoding: .utf8)
-
-        #expect(json?.contains("\"trait_type\":\"Rarity\"") == true)
-        #expect(json?.contains("\"value\":\"Legendary\"") == true)
-    }
-
-    @Test("ARC-69 metadata with attributes")
-    func metadataWithAttributes() throws {
-        let metadata = ARC69Metadata(
-            description: "Test NFT",
-            attributes: [
-                ARC69Attribute(traitType: "Background", value: "Blue"),
-                ARC69Attribute(traitType: "Power", value: 100)
-            ]
-        )
-
-        #expect(metadata.standard == "arc69")
-        #expect(metadata.attributes?.count == 2)
-
-        let noteData = try metadata.toNoteData()
-        let json = String(data: noteData, encoding: .utf8)
-
-        #expect(json?.contains("\"attributes\"") == true)
-        #expect(json?.contains("\"trait_type\"") == true)
-    }
-}
-
 @Suite("MintError Tests")
 struct MintErrorTests {
     @Test("Error descriptions")
@@ -287,7 +258,7 @@ struct InputValidationTests {
         let config = try MinterConfiguration(algodURL: "http://localhost:4001")
         let minter = Minter(configuration: config)
 
-        let metadata = ARC69Metadata(description: "Test")
+        let metadata = ARC.ARC69Metadata(description: "Test")
 
         // Should throw validation error before any network call
         await #expect(throws: MintError.self) {
@@ -306,7 +277,7 @@ struct InputValidationTests {
         let config = try MinterConfiguration(algodURL: "http://localhost:4001")
         let minter = Minter(configuration: config)
 
-        let metadata = ARC69Metadata(description: "Test")
+        let metadata = ARC.ARC69Metadata(description: "Test")
         let longName = String(repeating: "A", count: 33) // 33 chars, max is 32
 
         await #expect(throws: MintError.self) {
@@ -325,7 +296,7 @@ struct InputValidationTests {
         let config = try MinterConfiguration(algodURL: "http://localhost:4001")
         let minter = Minter(configuration: config)
 
-        let metadata = ARC69Metadata(description: "Test")
+        let metadata = ARC.ARC69Metadata(description: "Test")
         let longURL = "https://example.com/" + String(repeating: "a", count: 250) // > 256 chars
 
         await #expect(throws: MintError.self) {
@@ -344,7 +315,7 @@ struct InputValidationTests {
         let config = try MinterConfiguration(algodURL: "http://localhost:4001")
         let minter = Minter(configuration: config)
 
-        let metadata = ARC69Metadata(description: "Test")
+        let metadata = ARC.ARC69Metadata(description: "Test")
 
         // This should pass validation but fail on network (which is expected)
         do {

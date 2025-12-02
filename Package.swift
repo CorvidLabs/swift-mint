@@ -4,10 +4,10 @@ import PackageDescription
 let package = Package(
     name: "swift-mint",
     platforms: [
-        .iOS(.v15),
-        .macOS(.v12),
-        .tvOS(.v15),
-        .watchOS(.v8),
+        .iOS(.v16),
+        .macOS(.v13),
+        .tvOS(.v16),
+        .watchOS(.v9),
         .visionOS(.v1)
     ],
     products: [
@@ -19,6 +19,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/CorvidLabs/swift-algorand", from: "0.1.0"),
         .package(url: "https://github.com/CorvidLabs/swift-pinata", from: "0.1.0"),
+        .package(url: "https://github.com/CorvidLabs/swift-arc.git", from: "0.1.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.3"),
     ],
     targets: [
@@ -27,6 +28,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Algorand", package: "swift-algorand"),
                 .product(name: "Pinata", package: "swift-pinata"),
+                .product(name: "ARC", package: "swift-arc"),
             ]
         ),
         .testTarget(

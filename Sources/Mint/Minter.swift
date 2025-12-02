@@ -1,5 +1,6 @@
 @preconcurrency import Foundation
 import Algorand
+import ARC
 
 // MARK: - Minter Configuration
 
@@ -101,7 +102,7 @@ public actor Minter {
     /// - Returns: MintResult with asset ID and transaction details
     public func mintARC19(
         account: Account,
-        metadata: ARC3Metadata,
+        metadata: ARC.ARC3Metadata,
         cid: CID,
         unitName: String,
         assetName: String,
@@ -176,7 +177,7 @@ public actor Minter {
     /// - Returns: MintResult with asset ID and transaction details
     public func mintARC69(
         account: Account,
-        metadata: ARC69Metadata,
+        metadata: ARC.ARC69Metadata,
         unitName: String,
         assetName: String,
         url: String,
@@ -188,7 +189,7 @@ public actor Minter {
         try validateAssetParams(unitName: unitName, assetName: assetName, url: url)
 
         // Encode metadata as note
-        let noteData = try metadata.toNoteData()
+        let noteData = try metadata.toJSON()
 
         // Get transaction parameters
         let params = try await configuration.algodClient.transactionParams()
@@ -305,7 +306,7 @@ public actor Minter {
     public func updateARC69(
         account: Account,
         assetID: UInt64,
-        newMetadata: ARC69Metadata,
+        newMetadata: ARC.ARC69Metadata,
         manager: Address? = nil,
         reserve: Address? = nil,
         freeze: Address? = nil,
@@ -315,7 +316,7 @@ public actor Minter {
         _ = try await getAssetInfo(assetID: assetID)
 
         // Encode new metadata as note
-        let noteData = try newMetadata.toNoteData()
+        let noteData = try newMetadata.toJSON()
 
         // Get transaction parameters
         let params = try await configuration.algodClient.transactionParams()
@@ -408,7 +409,7 @@ public actor Minter {
     public func getARC19Metadata(
         assetID: UInt64,
         pinningProvider: some IPFSPinningProvider
-    ) async throws -> ARC3Metadata {
+    ) async throws -> ARC.ARC3Metadata {
         // Get asset info to retrieve reserve address and URL
         let assetInfo = try await getAssetInfo(assetID: assetID)
 
@@ -434,14 +435,14 @@ public actor Minter {
         )
 
         // Fetch metadata from IPFS
-        return try await pinningProvider.fetchJSON(cid, as: ARC3Metadata.self)
+        return try await pinningProvider.fetchJSON(cid, as: ARC.ARC3Metadata.self)
     }
 
     /// Get ARC-69 metadata from the most recent asset configuration transaction
     /// - Parameter assetID: The asset ID
     /// - Returns: The ARC-69 metadata
     /// - Note: Requires IndexerClient to be configured
-    public func getARC69Metadata(assetID: UInt64) async throws -> ARC69Metadata {
+    public func getARC69Metadata(assetID: UInt64) async throws -> ARC.ARC69Metadata {
         guard let indexer = configuration.indexerClient else {
             throw MintError.indexerRequired
         }
@@ -460,7 +461,7 @@ public actor Minter {
         )
 
         // Filter for acfg transactions for this asset and find the most recent one with ARC-69 metadata
-        var latestMetadata: ARC69Metadata?
+        var latestMetadata: ARC.ARC69Metadata?
         var latestRound: UInt64 = 0
 
         for tx in txResponse.transactions {
@@ -478,7 +479,7 @@ public actor Minter {
                 if isRelevantTx {
                     // Try to decode ARC-69 metadata from the note
                     if let noteData = tx.noteData {
-                        if let metadata = try? JSONDecoder().decode(ARC69Metadata.self, from: noteData),
+                        if let metadata = try? JSONDecoder().decode(ARC.ARC69Metadata.self, from: noteData),
                            metadata.standard == "arc69" {
                             let round = tx.confirmedRound ?? 0
                             if round >= latestRound {

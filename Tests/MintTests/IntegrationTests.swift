@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import ARC
 @testable import Mint
 import Algorand
 
@@ -67,13 +68,13 @@ struct IntegrationTests {
         let minter = Minter(configuration: configuration)
 
         // CREATE: Mint an ARC-69 NFT
-        let metadata = ARC69Metadata(
+        let metadata = ARC.ARC69Metadata(
             description: "Integration test NFT",
             mediaUrl: "https://example.com/test.png",
-            properties: ["test": AnyCodable(true)],
-            attributes: [
-                ARC69Attribute(traitType: "Environment", value: "Test"),
-                ARC69Attribute(traitType: "Timestamp", value: Int(Date().timeIntervalSince1970))
+            properties: [
+                "test": .string("true"),
+                "Environment": .string("Test"),
+                "Timestamp": .integer(Int(Date().timeIntervalSince1970))
             ]
         )
 
@@ -94,10 +95,10 @@ struct IntegrationTests {
         #expect(assetInfo.params.unitName == "TEST")
 
         // UPDATE: Update metadata
-        let updatedMetadata = ARC69Metadata(
+        let updatedMetadata = ARC.ARC69Metadata(
             description: "Updated integration test NFT",
             mediaUrl: "https://example.com/updated.png",
-            properties: ["updated": AnyCodable(true)]
+            properties: ["updated": .string("true")]
         )
 
         let updateTxID = try await minter.updateARC69(
@@ -137,7 +138,7 @@ struct IntegrationTests {
         let originalCID = try CID("QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG")
         let updatedCID = try CID("QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o")
 
-        let metadata = ARC3Metadata(
+        let metadata = ARC.ARC3Metadata(
             name: "ARC-19 Test NFT",
             description: "Integration test for ARC-19",
             image: originalCID.ipfsURI
@@ -208,7 +209,7 @@ struct IntegrationTests {
         let minter = Minter(configuration: configuration)
 
         // Create a simple NFT
-        let metadata = ARC69Metadata(description: "Config update test")
+        let metadata = ARC.ARC69Metadata(description: "Config update test")
 
         let mintResult = try await minter.mintARC69(
             account: account,

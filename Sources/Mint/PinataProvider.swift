@@ -1,4 +1,5 @@
 @preconcurrency import Foundation
+import ARC
 
 #if canImport(FoundationNetworking)
 @preconcurrency import FoundationNetworking
@@ -12,7 +13,7 @@ public protocol IPFSPinningProvider: Sendable {
     /// Pin JSON metadata and return the CID
     /// - Parameter metadata: The metadata to pin
     /// - Returns: CID of the pinned content
-    func pinJSON(_ metadata: ARC3Metadata) async throws -> CID
+    func pinJSON(_ metadata: ARC.ARC3Metadata) async throws -> CID
 
     /// Pin a file and return the CID
     /// - Parameters:
@@ -121,7 +122,7 @@ public extension Minter {
     /// - Returns: MintResult with asset ID and transaction details
     func mintARC19WithPinning(
         account: Account,
-        metadata: ARC3Metadata,
+        metadata: ARC.ARC3Metadata,
         pinningProvider: some IPFSPinningProvider,
         unitName: String,
         assetName: String,
@@ -156,7 +157,7 @@ public extension Minter {
     func updateARC19WithPinning(
         account: Account,
         assetID: UInt64,
-        newMetadata: ARC3Metadata,
+        newMetadata: ARC.ARC3Metadata,
         pinningProvider: some IPFSPinningProvider,
         manager: Address? = nil,
         freeze: Address? = nil,
