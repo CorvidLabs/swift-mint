@@ -42,12 +42,14 @@ public struct MintResult: Sendable {
     /// The reserve address (for ARC-19, contains the CID)
     public let reserveAddress: Address?
 
-    /// Creates a new mint result
-    ///
-    /// - Parameters:
-    ///   - assetID: The created asset ID
-    ///   - transactionID: Transaction ID
-    ///   - reserveAddress: The reserve address (for ARC-19, contains the CID)
+    /**
+     Creates a new mint result
+
+     - Parameters:
+       - assetID: The created asset ID
+       - transactionID: Transaction ID
+       - reserveAddress: The reserve address (for ARC-19, contains the CID)
+     */
     public init(assetID: UInt64, transactionID: String, reserveAddress: Address?) {
         self.assetID = assetID
         self.transactionID = transactionID
@@ -67,11 +69,14 @@ public actor Minter {
 
     // MARK: - Validation
 
-    /// Validates asset parameters before minting
-    /// - Parameters:
-    ///   - unitName: Asset unit name (max 8 chars)
-    ///   - assetName: Asset name (max 32 chars)
-    ///   - url: Optional URL (max 256 chars)
+    /**
+     Validates asset parameters before minting
+
+     - Parameters:
+       - unitName: Asset unit name (max 8 chars)
+       - assetName: Asset name (max 32 chars)
+       - url: Optional URL (max 256 chars)
+     */
     private func validateAssetParams(
         unitName: String,
         assetName: String,
@@ -90,16 +95,19 @@ public actor Minter {
 
     // MARK: - ARC-19 Minting
 
-    /// Mint an ARC-19 NFT with mutable metadata via reserve address
-    /// - Parameters:
-    ///   - account: The creator/manager account
-    ///   - metadata: ARC-3 compliant metadata
-    ///   - cid: IPFS CID pointing to the metadata JSON
-    ///   - unitName: Asset unit name (max 8 chars)
-    ///   - assetName: Asset name (max 32 chars)
-    ///   - freeze: Optional freeze address
-    ///   - clawback: Optional clawback address
-    /// - Returns: MintResult with asset ID and transaction details
+    /**
+     Mint an ARC-19 NFT with mutable metadata via reserve address
+
+     - Parameters:
+       - account: The creator/manager account
+       - metadata: ARC-3 compliant metadata
+       - cid: IPFS CID pointing to the metadata JSON
+       - unitName: Asset unit name (max 8 chars)
+       - assetName: Asset name (max 32 chars)
+       - freeze: Optional freeze address
+       - clawback: Optional clawback address
+     - Returns: MintResult with asset ID and transaction details
+     */
     public func mintARC19(
         account: Account,
         metadata: ARC.ARC3Metadata,
@@ -164,17 +172,20 @@ public actor Minter {
 
     // MARK: - ARC-69 Minting
 
-    /// Mint an ARC-69 NFT with mutable metadata in transaction note
-    /// - Parameters:
-    ///   - account: The creator/manager account
-    ///   - metadata: ARC-69 compliant metadata
-    ///   - unitName: Asset unit name (max 8 chars)
-    ///   - assetName: Asset name (max 32 chars)
-    ///   - url: URL to the asset media
-    ///   - metadataHash: Optional hash of the metadata
-    ///   - freeze: Optional freeze address
-    ///   - clawback: Optional clawback address
-    /// - Returns: MintResult with asset ID and transaction details
+    /**
+     Mint an ARC-69 NFT with mutable metadata in transaction note
+
+     - Parameters:
+       - account: The creator/manager account
+       - metadata: ARC-69 compliant metadata
+       - unitName: Asset unit name (max 8 chars)
+       - assetName: Asset name (max 32 chars)
+       - url: URL to the asset media
+       - metadataHash: Optional hash of the metadata
+       - freeze: Optional freeze address
+       - clawback: Optional clawback address
+     - Returns: MintResult with asset ID and transaction details
+     */
     public func mintARC69(
         account: Account,
         metadata: ARC.ARC69Metadata,
@@ -240,15 +251,18 @@ public actor Minter {
 
     // MARK: - ARC-19 Update
 
-    /// Update an ARC-19 NFT's metadata by changing the reserve address
-    /// - Parameters:
-    ///   - account: The manager account
-    ///   - assetID: The asset to update
-    ///   - newCID: New IPFS CID pointing to updated metadata
-    ///   - manager: New manager address (optional, keeps current if nil)
-    ///   - freeze: New freeze address (optional)
-    ///   - clawback: New clawback address (optional)
-    /// - Returns: Transaction ID
+    /**
+     Update an ARC-19 NFT's metadata by changing the reserve address
+
+     - Parameters:
+       - account: The manager account
+       - assetID: The asset to update
+       - newCID: New IPFS CID pointing to updated metadata
+       - manager: New manager address (optional, keeps current if nil)
+       - freeze: New freeze address (optional)
+       - clawback: New clawback address (optional)
+     - Returns: Transaction ID
+     */
     public func updateARC19(
         account: Account,
         assetID: UInt64,
@@ -292,17 +306,20 @@ public actor Minter {
 
     // MARK: - ARC-69 Update
 
-    /// Update an ARC-69 NFT's metadata via an asset configuration transaction
-    /// Per ARC-69 spec, metadata updates use acfg transactions with JSON in the note field.
-    /// - Parameters:
-    ///   - account: The manager account (must be the asset's manager)
-    ///   - assetID: The asset to update
-    ///   - newMetadata: New ARC-69 metadata
-    ///   - manager: New manager address (optional, keeps current if nil)
-    ///   - reserve: New reserve address (optional, keeps current if nil)
-    ///   - freeze: New freeze address (optional, keeps current if nil)
-    ///   - clawback: New clawback address (optional, keeps current if nil)
-    /// - Returns: Transaction ID
+    /**
+     Update an ARC-69 NFT's metadata via an asset configuration transaction
+     Per ARC-69 spec, metadata updates use acfg transactions with JSON in the note field.
+
+     - Parameters:
+       - account: The manager account (must be the asset's manager)
+       - assetID: The asset to update
+       - newMetadata: New ARC-69 metadata
+       - manager: New manager address (optional, keeps current if nil)
+       - reserve: New reserve address (optional, keeps current if nil)
+       - freeze: New freeze address (optional, keeps current if nil)
+       - clawback: New clawback address (optional, keeps current if nil)
+     - Returns: Transaction ID
+     */
     public func updateARC69(
         account: Account,
         assetID: UInt64,
@@ -349,15 +366,18 @@ public actor Minter {
 
     // MARK: - Asset Configuration Update
 
-    /// Update asset configuration addresses
-    /// - Parameters:
-    ///   - account: The manager account
-    ///   - assetID: The asset to update
-    ///   - manager: New manager address
-    ///   - reserve: New reserve address
-    ///   - freeze: New freeze address
-    ///   - clawback: New clawback address
-    /// - Returns: Transaction ID
+    /**
+     Update asset configuration addresses
+
+     - Parameters:
+       - account: The manager account
+       - assetID: The asset to update
+       - manager: New manager address
+       - reserve: New reserve address
+       - freeze: New freeze address
+       - clawback: New clawback address
+     - Returns: Transaction ID
+     */
     public func updateAssetConfig(
         account: Account,
         assetID: UInt64,
@@ -394,18 +414,24 @@ public actor Minter {
 
     // MARK: - Read Operations
 
-    /// Get asset information from the blockchain
-    /// - Parameter assetID: The asset ID to look up
-    /// - Returns: Asset information including creator, manager, reserve, url, etc.
+    /**
+     Get asset information from the blockchain
+
+     - Parameter assetID: The asset ID to look up
+     - Returns: Asset information including creator, manager, reserve, url, etc.
+     */
     public func getAssetInfo(assetID: UInt64) async throws -> AssetInfo {
         try await configuration.algodClient.assetInfo(assetID)
     }
 
-    /// Get ARC-19 metadata by fetching from IPFS
-    /// - Parameters:
-    ///   - assetID: The asset ID
-    ///   - pinningProvider: IPFS provider to fetch the metadata
-    /// - Returns: The ARC-3 metadata
+    /**
+     Get ARC-19 metadata by fetching from IPFS
+
+     - Parameters:
+       - assetID: The asset ID
+       - pinningProvider: IPFS provider to fetch the metadata
+     - Returns: The ARC-3 metadata
+     */
     public func getARC19Metadata(
         assetID: UInt64,
         pinningProvider: some IPFSPinningProvider
@@ -438,10 +464,13 @@ public actor Minter {
         return try await pinningProvider.fetchJSON(cid, as: ARC.ARC3Metadata.self)
     }
 
-    /// Get ARC-69 metadata from the most recent asset configuration transaction
-    /// - Parameter assetID: The asset ID
-    /// - Returns: The ARC-69 metadata
-    /// - Note: Requires IndexerClient to be configured
+    /**
+     Get ARC-69 metadata from the most recent asset configuration transaction
+
+     - Parameter assetID: The asset ID
+     - Returns: The ARC-69 metadata
+     - Note: Requires IndexerClient to be configured
+     */
     public func getARC69Metadata(assetID: UInt64) async throws -> ARC.ARC69Metadata {
         guard let indexer = configuration.indexerClient else {
             throw MintError.indexerRequired
@@ -501,12 +530,15 @@ public actor Minter {
 
     // MARK: - Delete Operations
 
-    /// Destroy an asset
-    /// - Parameters:
-    ///   - account: The manager account (must hold all asset units)
-    ///   - assetID: The asset to destroy
-    /// - Returns: Transaction ID
-    /// - Note: The account must be the manager AND hold all units of the asset
+    /**
+     Destroy an asset
+
+     - Parameters:
+       - account: The manager account (must hold all asset units)
+       - assetID: The asset to destroy
+     - Returns: Transaction ID
+     - Note: The account must be the manager AND hold all units of the asset
+     */
     public func destroyAsset(
         account: Account,
         assetID: UInt64

@@ -39,8 +39,10 @@ public struct CID: Sendable, Equatable {
         }
     }
 
-    /// Convert CID to reserve address for ARC-19
-    /// Uses the raw 32-byte hash from the CID as the address bytes
+    /**
+     Convert CID to reserve address for ARC-19
+     Uses the raw 32-byte hash from the CID as the address bytes
+     */
     public func toReserveAddress() throws -> Address {
         let bytes = try cidToBytes()
 
@@ -117,9 +119,11 @@ public struct CID: Sendable, Equatable {
         return Array(decoded[(offset + 2)...])
     }
 
-    /// Create a template URL for ARC-19
-    /// The template uses `{ipfscid:VERSION:CODEC:FIELD:HASH}` format
-    /// Uses the codec detected from the CID by default
+    /**
+     Create a template URL for ARC-19
+     The template uses `{ipfscid:VERSION:CODEC:FIELD:HASH}` format
+     Uses the codec detected from the CID by default
+     */
     public func toARC19URL(field: String = "reserve", suffix: String? = nil) -> String {
         var url = "template-ipfs://{ipfscid:\(version):\(codec):\(field):sha2-256}"
         if let suffix = suffix {
@@ -128,12 +132,15 @@ public struct CID: Sendable, Equatable {
         return url
     }
 
-    /// Reconstruct a CID from a reserve address and template URL parameters
-    /// - Parameters:
-    ///   - address: The reserve address containing the 32-byte hash
-    ///   - version: CID version (0 or 1)
-    ///   - codec: Multicodec name ("dag-pb" or "raw")
-    /// - Returns: Reconstructed CID
+    /**
+     Reconstruct a CID from a reserve address and template URL parameters
+
+     - Parameters:
+       - address: The reserve address containing the 32-byte hash
+       - version: CID version (0 or 1)
+       - codec: Multicodec name ("dag-pb" or "raw")
+     - Returns: Reconstructed CID
+     */
     public static func fromReserveAddress(
         _ address: Address,
         version: Int,
@@ -198,8 +205,10 @@ public struct ARC19TemplateURL: Sendable, Equatable {
     /// Optional suffix path (e.g., "/arc3.json")
     public let suffix: String?
 
-    /// Parse an ARC-19 template URL
-    /// Format: template-ipfs://{ipfscid:VERSION:CODEC:FIELD:HASH}[/suffix]
+    /**
+     Parse an ARC-19 template URL
+     Format: template-ipfs://{ipfscid:VERSION:CODEC:FIELD:HASH}[/suffix]
+     */
     public static func parse(_ url: String) throws -> ARC19TemplateURL {
         // Check prefix
         guard url.hasPrefix("template-ipfs://") else {
