@@ -1,6 +1,7 @@
 # swift-mint
 
-[![CI](https://img.shields.io/github/actions/workflow/status/CorvidLabs/swift-mint/CI.yml?label=CI&branch=main)](https://github.com/CorvidLabs/swift-mint/actions/workflows/CI.yml)
+[![macOS](https://img.shields.io/github/actions/workflow/status/CorvidLabs/swift-mint/macOS.yml?label=macOS&branch=main)](https://github.com/CorvidLabs/swift-mint/actions/workflows/macOS.yml)
+[![Ubuntu](https://img.shields.io/github/actions/workflow/status/CorvidLabs/swift-mint/ubuntu.yml?label=Ubuntu&branch=main)](https://github.com/CorvidLabs/swift-mint/actions/workflows/ubuntu.yml)
 [![License](https://img.shields.io/github/license/CorvidLabs/swift-mint)](https://github.com/CorvidLabs/swift-mint/blob/main/LICENSE)
 [![Version](https://img.shields.io/github/v/release/CorvidLabs/swift-mint)](https://github.com/CorvidLabs/swift-mint/releases)
 
