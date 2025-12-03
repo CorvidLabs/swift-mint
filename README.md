@@ -1,8 +1,8 @@
 # swift-mint
 
-![Swift 6.0+](https://img.shields.io/badge/Swift-6.0+-orange.svg)
-![Platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20visionOS-lightgrey.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![CI](https://img.shields.io/github/actions/workflow/status/CorvidLabs/swift-mint/CI.yml?label=CI&branch=main)](https://github.com/CorvidLabs/swift-mint/actions/workflows/CI.yml)
+[![License](https://img.shields.io/github/license/CorvidLabs/swift-mint)](https://github.com/CorvidLabs/swift-mint/blob/main/LICENSE)
+[![Version](https://img.shields.io/github/v/release/CorvidLabs/swift-mint)](https://github.com/CorvidLabs/swift-mint/releases)
 
 > **Pre-1.0 Notice**: This library is under active development. The API may change between minor versions until 1.0.
 
