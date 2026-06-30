@@ -25,7 +25,7 @@ Add Mint to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/CorvidLabs/swift-mint.git", from: "0.0.1")
+    .package(url: "https://github.com/CorvidLabs/swift-mint.git", from: "0.1.0")
 ]
 ```
 
