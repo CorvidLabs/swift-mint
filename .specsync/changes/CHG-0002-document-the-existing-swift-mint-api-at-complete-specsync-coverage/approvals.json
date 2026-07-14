@@ -1,0 +1,18 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "user:0xLeif",
+      "timestamp": 1783998806,
+      "digest": "d3b16475de66b0720f59196cba11140b59889cd2de0c17d78a08815425be093c",
+      "note": "Definition approved after the source-backed companion and requirements were completed and reviewed; hosted CI and closing approval remain pending."
+    },
+    {
+      "gate": "acceptance",
+      "actor": "user:0xLeif",
+      "timestamp": 1783998898,
+      "digest": "b07a8cee98bffe4fa7157b85240746ca719eced44750081221210c0e7ac3de8d",
+      "note": "Closing approval recorded after strict 100 percent SpecSync validation and native swift build and swift test verification passed; 29 tests in 11 suites passed and opt-in live-network suites remained correctly skipped without credentials."
+    }
+  ]
+}

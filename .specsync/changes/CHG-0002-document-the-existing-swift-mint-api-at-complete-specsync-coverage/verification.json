@@ -1,0 +1,30 @@
+{
+  "timestamp": 1783998890,
+  "commit": "0a56ecc84902719224254ade08b127c2027dd6a3",
+  "contract_digest": "d3b16475de66b0720f59196cba11140b59889cd2de0c17d78a08815425be093c",
+  "workspace_digest": "657365c72a4d5221ab99cf657234fefad5e9b2b7451e92faf3581a1c1ab9238c",
+  "acceptance_input_digest": "25b98c9009b6ddbfcc3e2310933706a96bc1fc633bd53cbe80757d3260e616bc",
+  "passed": true,
+  "commands": [
+    {
+      "command": "swift build",
+      "success": true,
+      "exit_code": 0
+    },
+    {
+      "command": "swift test",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-mint-001",
+    "REQ-mint-002",
+    "REQ-mint-003",
+    "REQ-mint-004",
+    "REQ-mint-005",
+    "REQ-mint-006",
+    "REQ-mint-007",
+    "REQ-mint-008"
+  ]
+}

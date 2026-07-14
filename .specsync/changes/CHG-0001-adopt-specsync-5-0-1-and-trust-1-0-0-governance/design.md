@@ -5,4 +5,4 @@ artifact: design
 
 # Design
 
-Preserve both platform workflows and DocC Pages unchanged. Add a macOS Trust job whose native Fledge lane builds and tests the library, including the existing integration-test target. Use standard Trust with blocking risk, soft provenance, advisory threshold 0, and managed Atlas disabled.
+Preserve both platform workflows and DocC Pages unchanged. Add a macOS Trust job whose native Fledge lane builds and tests the library, including the existing integration-test target. Use standard Trust with blocking risk, soft provenance, complete contract coverage, and managed Atlas disabled.

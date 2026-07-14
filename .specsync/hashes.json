@@ -1,0 +1,15 @@
+{
+  "hashes": {
+    "specs/mint/tasks.md": "fc07c954e5d8258d628c520d29181f83830de082d0f779b52af52d5accabcb55",
+    "Sources/Mint/Mint.swift": "aade5043a7a44c3d1c2defb9500fb9a8206d76629e714d60978a7fe8c7b1c202",
+    "Sources/Mint/CID.swift": "d5a7d2c6e142b09fe187ff14e55cba90539c0326531614372bf7328cc0664b4d",
+    "Sources/Mint/Minter.swift": "9743828c03fea1a498acbac95117ce06f3dea4e392ff1bf04dd92fdf4cdedd9c",
+    "specs/mint/mint.spec.md": "ad32de3308ae402f0d0a62ab917b4cb2e58f2eae3c706191cb814e17cfd01bf1",
+    "specs/mint/context.md": "04dea91a273fb53f1e1732ed349ca2c3d42b860a22a6884639df0871676f04ea",
+    ".specsync/config.toml": "73de5bc8fdc419a5cd499845e040e3ec687f0ed7eb1dcbaa0777e0caf204e883",
+    "Sources/Mint/MintError.swift": "9af1acd96fca0f3852c7ac624feeb70859dda5a55def86309dd04af9c81d2c68",
+    "specs/mint/testing.md": "22de6cfd1b3d3dd06526f3200f04e84dbb23e68af3add59bca68ceee3d9ab887",
+    "specs/mint/requirements.md": "0872e380f75f2c60b746bd7a854b1c8e4ea489dbc3ee2515eb62966735b8f894",
+    "Sources/Mint/PinataProvider.swift": "86ff2fe29f29266e5bdf0b68d346e428268c71be2ffa84767ed95cc00033c524"
+  }
+}

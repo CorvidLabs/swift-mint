@@ -1,3 +1,18 @@
 {
-  "approvals": []
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "user:0xLeif",
+      "timestamp": 1783998806,
+      "digest": "15a2f74ab57e0b4b4b211cd7cfe3a9e90fa03944e54302a0ca158c80d4658216",
+      "note": "Definition approved after governance inputs were completed and reviewed; hosted CI and closing approval remain pending."
+    },
+    {
+      "gate": "acceptance",
+      "actor": "user:0xLeif",
+      "timestamp": 1783998915,
+      "digest": "92f1218d753008978979128f76458d61b029377a43cc5e1ea3c42c209275086e",
+      "note": "Closing approval recorded after the canonical delta was applied, strict SpecSync remained at 100 percent, and native swift build and swift test verification passed with 29 tests in 11 suites."
+    }
+  ]
 }

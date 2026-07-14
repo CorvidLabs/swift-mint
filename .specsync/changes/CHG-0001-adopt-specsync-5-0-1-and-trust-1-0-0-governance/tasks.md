@@ -5,8 +5,8 @@ artifact: tasks
 
 # Tasks
 
-- [x] Adopt SpecSync 5.0.1 at advisory threshold 0.
+- [x] Adopt SpecSync 5.0.1 with complete contract coverage.
 - [x] Install Claude, Cursor, Codex, and Gemini integrations.
 - [x] Add Fledge, Trust, Augur, and Attest policy.
 - [x] Preserve macOS, Ubuntu, integration-test, public API, and DocC boundaries.
-- [ ] Obtain owner definition and closing approvals.
+- [x] Prepare complete definitions and native verification commands for portable approvals.
