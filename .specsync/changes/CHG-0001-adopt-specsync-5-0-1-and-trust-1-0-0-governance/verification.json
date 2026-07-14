@@ -1,0 +1,21 @@
+{
+  "timestamp": 1783998910,
+  "commit": "0a56ecc84902719224254ade08b127c2027dd6a3",
+  "contract_digest": "15a2f74ab57e0b4b4b211cd7cfe3a9e90fa03944e54302a0ca158c80d4658216",
+  "workspace_digest": "a8d80983030964cea36245b6b6a18d8ac88427ba9b22d7ae0e3ec2c623fbb58e",
+  "acceptance_input_digest": "1417d8b3c13794bb17e48471391b93994253bf2cf0ad5e2589e04cadf6d0194e",
+  "passed": true,
+  "commands": [
+    {
+      "command": "swift build",
+      "success": true,
+      "exit_code": 0
+    },
+    {
+      "command": "swift test",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "CHG-0002-document-the-existing-swift-mint-api-at-complete-specsync-coverage",
+  "slug": "document-the-existing-swift-mint-api-at-complete-specsync-coverage",
+  "title": "Document the existing Swift Mint API at complete SpecSync coverage",
+  "description": "Document the existing Swift Mint API at complete SpecSync coverage",
+  "kind": "documentation",
+  "state": "accepted",
+  "base_commit": "0a56ecc84902719224254ade08b127c2027dd6a3",
+  "created_at": 1783998525,
+  "updated_at": 1783998898,
+  "affected_specs": [
+    "mint"
+  ],
+  "affected_paths": [
+    "specs/mint",
+    ".trust.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "An active canonical companion covers all five Swift implementation files and every parser-visible export at 100 percent; source-backed requirements map CID ARC-19 minting ARC-69 minting asset updates reads destruction and Pinata behavior to native tests; strict SpecSync scores A without scaffolds; Sources and Tests remain unchanged"
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}
